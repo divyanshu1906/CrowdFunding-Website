@@ -12,6 +12,7 @@ const ProjectDisplayComponent = ({ project }) => {
     try {
       setLoading(true);
     const data = await getProjectById(project.category, project.id);
+    console.log("Fetched project details:", data); 
       setSelectedProject(data);
       setShowModal(true);
     } catch (err) {

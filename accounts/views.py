@@ -171,12 +171,6 @@ def get_all_projects(request):
 
 @api_view(["GET"])
 def get_project_by_id(request, category, id):
-    """
-    Fetch project by category (film, music, art) and ID
-    """
-    project = None
-    serializer = None
-
     try:
         if category == "film":
             project = FilmProject.objects.get(id=id)
@@ -188,14 +182,13 @@ def get_project_by_id(request, category, id):
             project = ArtProject.objects.get(id=id)
             serializer = ArtProjectSerializer(project)
         else:
-            return Response({"error": "Invalid category"}, status=400)
+            return Response({"error": "Invalid category"}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     except Exception as e:
-        return Response({"error": str(e)}, status=404)
-
-    data = serializer.data
-    data["category"] = category
-    return Response(data, status=200)
-
+        print("Error fetching project:", e)
+        return Response({"error": "Project not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
 
@@ -264,3 +257,4 @@ def get_my_projects(request):
     all_projects.sort(key=lambda x: x["created_at"], reverse=True)
 
     return Response(all_projects, status=status.HTTP_200_OK)
+

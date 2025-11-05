@@ -35,13 +35,17 @@ export default function Film() {
     setError("");
 
     const rewards = form.reward_tiers
-      ? form.reward_tiers.split("\n").map((line) => {
-          const [amount, reward] = line.split("=");
-          return {
-            amount: Number(amount?.trim().replace("₹", "")),
-            reward: reward?.trim(),
-          };
-        })
+      ? form.reward_tiers
+          .split("\n")
+          .map((line) => {
+            if (!line.includes("=")) return null;
+            const [place, reward] = line.split("=");
+            return {
+              place: place?.trim(),
+              reward: reward?.trim() || "No reward specified",
+            };
+          })
+          .filter(Boolean)
       : [];
 
     const formData = new FormData();
@@ -55,7 +59,7 @@ export default function Film() {
     try {
       await createFilmProject(formData, access);
       alert("🎬 Film project created successfully!");
-      navigate("/project"); 
+      navigate("/project");
     } catch (err) {
       setError(err.response?.data?.detail || "Something went wrong.");
     } finally {
@@ -65,6 +69,7 @@ export default function Film() {
 
   return (
     <ProjectFormComponent
+      category="Film"
       form={form}
       handleChange={handleChange}
       handleSubmit={handleSubmit}

@@ -21,10 +21,16 @@ const ProjectModal = ({ project, onClose }) => {
           ✖
         </button>
 
-        <h2 className="text-2xl font-bold mb-2 text-indigo-700">{project.title}</h2>
+        <h2 className="text-2xl font-bold mb-2 text-indigo-700">
+          {project.title}
+        </h2>
         <p className="text-gray-700 mb-4">{project.description}</p>
-        <p className="text-sm text-gray-500 mb-2">Goal: ₹{project.goal_amount}</p>
-        <p className="text-sm text-gray-500 mb-4">Raised: ₹{project.raised_amount}</p>
+        <p className="text-sm text-gray-500 mb-2">
+          Goal: ₹{project.goal_amount}
+        </p>
+        <p className="text-sm text-gray-500 mb-4">
+          Raised: ₹{project.raised_amount}
+        </p>
 
         {/* Images / Media */}
         {project.poster_image && (
@@ -43,6 +49,28 @@ const ProjectModal = ({ project, onClose }) => {
           />
         )}
 
+        {project.trailer_url && (
+          <div className="mt-4">
+            {project.trailer_url.includes("youtube.com") ||
+            project.trailer_url.includes("youtu.be") ? (
+              <iframe
+                width="100%"
+                height="315"
+                src={project.trailer_url.replace("watch?v=", "embed/")}
+                title="Trailer Video"
+                className="rounded-xl"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            ) : (
+              <video controls className="w-full rounded-xl mt-2">
+                <source src={project.trailer_url} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            )}
+          </div>
+        )}
+
         {project.artwork_images?.length > 0 && (
           <div className="grid grid-cols-2 gap-2 mb-4">
             {project.artwork_images.map((img, i) => (
@@ -57,10 +85,43 @@ const ProjectModal = ({ project, onClose }) => {
         )}
 
         {project.short_video_url && (
-          <video controls className="w-full rounded-xl mt-2">
-            <source src={project.short_video_url} type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
+          <div className="mt-4">
+            {project.short_video_url.includes("youtube.com") ||
+            project.short_video_url.includes("youtu.be") ? (
+              <iframe
+                width="100%"
+                height="315"
+                src={project.short_video_url.replace("watch?v=", "embed/")}
+                title="Short Video"
+                className="rounded-xl"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            ) : (
+              <video controls className="w-full rounded-xl mt-2">
+                <source src={project.short_video_url} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            )}
+          </div>
+        )}
+
+        {project.reward_tiers?.length > 0 && (
+          <div className="mt-4">
+            <h3 className="font-semibold text-gray-700 mb-2">
+              🎁 Reward Tiers
+            </h3>
+            <ul className="space-y-2">
+              {project.reward_tiers.map((r, i) => (
+                <li key={i} className="flex items-center gap-2 text-gray-700">
+                  <span className="font-semibold text-indigo-600">
+                    {r.place || `Tier ${i + 1}`}
+                  </span>
+                  <span>— {r.reward || "No reward description"}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         )}
       </div>
     </div>

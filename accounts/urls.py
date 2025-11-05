@@ -10,7 +10,9 @@ urlpatterns = [
 
     path('', views.get_all_projects, name='get_all_projects'),
    path('<str:category>/<int:id>/', views.get_project_by_id, name='get_project_by_id'),
+
    path("my/", views.get_my_projects, name="get_my_projects"),
+   
 
     path('film/create/', views.create_film_project, name='create_film_project'),
     path('music/create/', views.create_music_project, name='create_music_project'),
