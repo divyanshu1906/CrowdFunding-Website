@@ -15,6 +15,7 @@ import Music from "./pages/Music"; // ✅ Start project - Music
 import Art from "./pages/Art"; // ✅ Start project - Art
 import StartProject from "./pages/StartProject"; // ✅ Categories selection page
 import MyProjects from "./pages/MyProjects";
+import UpdateProject from "./pages/UpdateProject";
 import { AuthProvider, AuthContext } from "./context/AuthContext";
 
 function PrivateRoute({ children }) {
@@ -45,10 +46,18 @@ export default function App() {
             }
           />
           <Route
-            path="/my-projects" 
+            path="/my-projects"
             element={
               <PrivateRoute>
                 <MyProjects />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/update-project/:category/:id"
+            element={
+              <PrivateRoute>
+                <UpdateProject />
               </PrivateRoute>
             }
           />

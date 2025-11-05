@@ -5,7 +5,7 @@ import React from "react";
  * Shared across Film, Music, and Art projects.
  * Each category component (Film.jsx, Music.jsx, Art.jsx) extends this form.
  */
-const ProjectFormComponent = ({ form, handleChange, handleSubmit, loading, error, children }) => {
+const ProjectFormComponent = ({ category, form, handleChange, handleSubmit, loading, error, children }) => {
   
   return (
     <form
@@ -14,7 +14,7 @@ const ProjectFormComponent = ({ form, handleChange, handleSubmit, loading, error
       className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-lg mx-auto"
     >
       <h2 className="text-2xl font-semibold mb-6 text-center text-indigo-700">
-        Create New Project
+        Create {category} New Project
       </h2>
 
       {/* 🧩 BaseProject common fields */}

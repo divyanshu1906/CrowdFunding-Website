@@ -264,3 +264,65 @@ def get_my_projects(request):
     all_projects.sort(key=lambda x: x["created_at"], reverse=True)
 
     return Response(all_projects, status=status.HTTP_200_OK)
+
+@api_view(["PUT"])
+@permission_classes([IsAuthenticated])
+def update_project(request, category, id):
+    model_map = {
+        "film": FilmProject,
+        "music": MusicProject,
+        "art": ArtProject,
+    }
+    model = model_map.get(category.lower())
+    if not model:
+        return Response({"error": "Invalid category"}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        project = model.objects.get(id=id, creator=request.user)
+    except model.DoesNotExist:
+        return Response({"error": "Project not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    data = request.data.copy()
+    serializer_class = {
+        "film": FilmProjectSerializer,
+        "music": MusicProjectSerializer,
+        "art": ArtProjectSerializer,
+    }.get(category.lower())
+
+    if not serializer_class:
+        return Response({"error": "Invalid serializer"}, status=status.HTTP_400_BAD_REQUEST)
+
+    serializer = serializer_class(project, data=data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["DELETE"])
+@permission_classes([IsAuthenticated])
+def delete_project(request, category, id):
+    print(f"🟢 DELETE endpoint hit: category={category}, id={id}, user={request.user}")
+    
+    model_map = {
+        "film": FilmProject,
+        "music": MusicProject,
+        "art": ArtProject,
+    }
+    model = model_map.get(category.lower())
+    if not model:
+        print("❌ Invalid category")
+        return Response({"error": "Invalid category"}, status=status.HTTP_400_BAD_REQUEST)
+
+    project = model.objects.filter(id=id).first()
+    if not project:
+        print(f"❌ No project found for id={id} in {category}")
+        return Response({"error": "Project not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    if project.creator != request.user:
+        print(f"⚠️ Unauthorized delete: {request.user} ≠ {project.creator}")
+        return Response({"error": "You are not allowed to delete this project"}, status=status.HTTP_403_FORBIDDEN)
+
+    project.delete()
+    print("✅ Project deleted successfully!")
+    return Response({"message": "Project deleted successfully"}, status=status.HTTP_204_NO_CONTENT)

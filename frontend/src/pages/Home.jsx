@@ -40,15 +40,6 @@ export default function Home() {
           </div>
         )}
 
-        {/* ✅ If not a creator, show “View Projects” instead */}
-        {role !== "creator" && (
-          <button
-            onClick={() => navigate("/project")}
-            className="bg-white text-blue-600 px-6 py-3 rounded-full font-semibold hover:bg-gray-100 transition"
-          >
-            Explore Projects
-          </button>
-        )}
       </section>
 
       {/* Featured Projects */}

@@ -65,6 +65,7 @@ export default function Art() {
 
   return (
     <ProjectFormComponent
+      category="Art"
       form={form}
       handleChange={handleChange}
       handleSubmit={handleSubmit}

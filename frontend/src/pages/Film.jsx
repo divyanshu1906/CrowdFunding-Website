@@ -65,6 +65,7 @@ export default function Film() {
 
   return (
     <ProjectFormComponent
+      category="Film"
       form={form}
       handleChange={handleChange}
       handleSubmit={handleSubmit}

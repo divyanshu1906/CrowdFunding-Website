@@ -68,6 +68,7 @@ export default function Music() {
 
   return (
     <ProjectFormComponent
+      category="Music"
       form={form}
       handleChange={handleChange}
       handleSubmit={handleSubmit}
