@@ -1,0 +1,266 @@
+from rest_framework import status, permissions
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+from django.contrib.auth import authenticate
+from rest_framework.permissions import IsAuthenticated
+from .serializers import RegisterSerializer, UserSerializer, ProjectSerializer, ProfileSerializer,  FilmProjectSerializer, MusicProjectSerializer, ArtProjectSerializer    
+from django.contrib.auth.models import User
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.views import APIView
+from .models import FilmProject, MusicProject, ArtProject, ArtworkImage, AudioSample
+
+
+@api_view(['POST'])
+def register_view(request):
+    serializer = RegisterSerializer(data=request.data)
+    
+    if serializer.is_valid():
+        user = serializer.save()
+        refresh = RefreshToken.for_user(user)
+        data = {
+            "message": "Registration successful",
+            "user": UserSerializer(user).data,
+            "refresh": str(refresh),
+            "access": str(refresh.access_token),
+        }
+        return Response(data, status=status.HTTP_201_CREATED)
+    
+    return Response({
+        "message": "Registration failed",
+        "errors": serializer.errors
+    }, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def login_view(request):
+    username_or_email = request.data.get('username') or request.data.get('email')
+    password = request.data.get('password')
+
+    if not username_or_email or not password:
+        return Response(
+            {'detail': 'Both username/email and password are required.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    user = None
+    user = authenticate(username=username_or_email, password=password)
+    if user is None:
+        try:
+            u = User.objects.get(email=username_or_email)
+            user = authenticate(username=u.username, password=password)
+        except User.DoesNotExist:
+            user = None
+
+    if user is None:
+        return Response(
+            {'detail': 'Invalid username/email or password.'},
+            status=status.HTTP_401_UNAUTHORIZED
+        )
+
+    refresh = RefreshToken.for_user(user)
+    profile = ProfileSerializer(user.profile).data
+
+    return Response({
+        'id': user.id,
+        'username': user.username,
+        'email': user.email,
+        'first_name': user.first_name,
+        'last_name': user.last_name,
+        'role': profile.get('role'),  # ✅ add this line
+        'access': str(refresh.access_token),
+        'refresh': str(refresh),
+        'message': f'Welcome back, {user.username}!'
+    }, status=status.HTTP_200_OK)
+
+class LogoutView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request):
+        try:
+            refresh_token = request.data['refresh']
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response(status=status.HTTP_205_RESET_CONTENT)
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def me_view(request):
+    user = request.user
+    return Response({
+    'user': UserSerializer(user).data,
+    'profile': ProfileSerializer(user.profile).data,
+    })
+
+
+#Creating Project Views
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_film_project(request):
+    serializer = FilmProjectSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save(creator=request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_music_project(request):
+    serializer = MusicProjectSerializer(data=request.data)
+    if serializer.is_valid():
+        project = serializer.save(creator=request.user)
+
+        # Handle multiple audio file uploads
+        for file in request.FILES.getlist("audio_samples"):
+            AudioSample.objects.create(project=project, file=file)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    print("❌ Serializer errors:", serializer.errors)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_art_project(request):
+    serializer = ArtProjectSerializer(data=request.data)
+    if serializer.is_valid():
+        project = serializer.save(creator=request.user)
+
+        # Handle multiple image files
+        for img in request.FILES.getlist('artwork_images'):
+            ArtworkImage.objects.create(project=project, image=img)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    print("❌ Serializer errors:", serializer.errors)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# Get all projects
+@api_view(["GET"])
+def get_all_projects(request):
+    film_projects = FilmProject.objects.all()
+    music_projects = MusicProject.objects.all()
+    art_projects = ArtProject.objects.all()
+
+    all_projects = []
+
+    for p in film_projects:
+        serialized = FilmProjectSerializer(p).data
+        serialized["category"] = "film"
+        serialized["unique_id"] = f"film-{p.id}"  # 👈 important
+        all_projects.append(serialized)
+
+    for p in music_projects:
+        serialized = MusicProjectSerializer(p).data
+        serialized["category"] = "music"
+        serialized["unique_id"] = f"music-{p.id}"
+        all_projects.append(serialized)
+
+    for p in art_projects:
+        serialized = ArtProjectSerializer(p).data
+        serialized["category"] = "art"
+        serialized["unique_id"] = f"art-{p.id}"
+        all_projects.append(serialized)
+
+    all_projects.sort(key=lambda x: x["created_at"], reverse=True)
+    return Response(all_projects, status=status.HTTP_200_OK)
+
+
+@api_view(["GET"])
+def get_project_by_id(request, category, id):
+    """
+    Fetch project by category (film, music, art) and ID
+    """
+    project = None
+    serializer = None
+
+    try:
+        if category == "film":
+            project = FilmProject.objects.get(id=id)
+            serializer = FilmProjectSerializer(project)
+        elif category == "music":
+            project = MusicProject.objects.get(id=id)
+            serializer = MusicProjectSerializer(project)
+        elif category == "art":
+            project = ArtProject.objects.get(id=id)
+            serializer = ArtProjectSerializer(project)
+        else:
+            return Response({"error": "Invalid category"}, status=400)
+    except Exception as e:
+        return Response({"error": str(e)}, status=404)
+
+    data = serializer.data
+    data["category"] = category
+    return Response(data, status=200)
+
+
+
+
+@api_view(['GET'])
+def get_all_films(request):
+    projects = FilmProject.objects.all().order_by('-created_at')
+    serializer = FilmProjectSerializer(projects, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def get_all_music(request):
+    projects = MusicProject.objects.all().order_by('-created_at')
+    serializer = MusicProjectSerializer(projects, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def get_all_art(request):
+    projects = ArtProject.objects.all().order_by('-created_at')
+    serializer = ArtProjectSerializer(projects, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def get_film_by_id(request, id):
+    try:
+        project = FilmProject.objects.get(id=id)
+        serializer = FilmProjectSerializer(project)
+        return Response(serializer.data)
+    except FilmProject.DoesNotExist:
+        return Response({'error': 'Film project not found'}, status=404)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_my_projects(request):
+    """
+    Return all projects created by the authenticated user (film, music, art).
+    """
+    user = request.user
+    all_projects = []
+
+    # 🎬 Film projects
+    film_projects = FilmProject.objects.filter(creator=user)
+    for p in film_projects:
+        serialized = FilmProjectSerializer(p).data
+        serialized["category"] = "film"
+        serialized["unique_id"] = f"film-{p.id}"
+        all_projects.append(serialized)
+
+    # 🎵 Music projects
+    music_projects = MusicProject.objects.filter(creator=user)
+    for p in music_projects:
+        serialized = MusicProjectSerializer(p).data
+        serialized["category"] = "music"
+        serialized["unique_id"] = f"music-{p.id}"
+        all_projects.append(serialized)
+
+    # 🎨 Art projects
+    art_projects = ArtProject.objects.filter(creator=user)
+    for p in art_projects:
+        serialized = ArtProjectSerializer(p).data
+        serialized["category"] = "art"
+        serialized["unique_id"] = f"art-{p.id}"
+        all_projects.append(serialized)
+
+    # Sort newest first
+    all_projects.sort(key=lambda x: x["created_at"], reverse=True)
+
+    return Response(all_projects, status=status.HTTP_200_OK)
