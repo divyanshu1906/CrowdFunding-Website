@@ -1,0 +1,22 @@
+# Python cache and compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Django static and media files
+staticfiles/
+media/
+
+# React build and dependency files
+frontend/node_modules/
+frontend/build/
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Environment variables and OS files
+*.env
+.DS_Store
