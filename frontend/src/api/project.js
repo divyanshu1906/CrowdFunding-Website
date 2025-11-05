@@ -94,3 +94,35 @@ export const deleteProject = async (category, id, token) => {
     throw error;
   }
 };
+
+export const getAllFilms = async () => {
+  try {
+    const res = await axios.get(`${BASE_URL}/projects/films/`);
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching films:", error);
+    throw error;
+  }
+};
+
+// ✅ Get all music projects
+export const getAllMusic = async () => {
+  try {
+    const res = await axios.get(`${BASE_URL}/projects/music/`);
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching music:", error);
+    throw error;
+  }
+};
+
+// ✅ Get all art projects
+export const getAllArt = async () => {
+  try {
+    const res = await axios.get(`${BASE_URL}/projects/art/`);
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching art:", error);
+    throw error;
+  }
+};

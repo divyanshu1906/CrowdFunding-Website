@@ -20,4 +20,8 @@ urlpatterns = [
     path('film/create/', views.create_film_project, name='create_film_project'),
     path('music/create/', views.create_music_project, name='create_music_project'),
     path('art/create/', views.create_art_project, name='create_art_project'),
+
+    path("films/", views.get_all_films, name="get_all_films"),
+    path("music/", views.get_all_music, name="get_all_music"),
+    path("art/", views.get_all_art, name="get_all_art"),
 ]

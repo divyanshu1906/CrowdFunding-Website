@@ -131,10 +131,11 @@ REST_FRAMEWORK = {
 
 from datetime import timedelta
 SIMPLE_JWT = {
-'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
-'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-'ROTATE_REFRESH_TOKENS': True,
-'BLACKLIST_AFTER_ROTATION': True,
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),      # ⬅️ increase this (default: 5 minutes)
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),     # ⬅️ valid for 7 days
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "AUTH_HEADER_TYPES": ("Bearer",),
 }
 AUTH_USER_MODEL = 'auth.User'
 

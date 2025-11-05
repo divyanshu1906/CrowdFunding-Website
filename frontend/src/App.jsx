@@ -19,7 +19,16 @@ import UpdateProject from "./pages/UpdateProject";
 import { AuthProvider, AuthContext } from "./context/AuthContext";
 
 function PrivateRoute({ children }) {
-  const { user } = React.useContext(AuthContext);
+  const { user, loading } = React.useContext(AuthContext);
+
+  if (loading) {
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500"></div>
+    </div>
+  );
+}
+
   return user ? children : <Navigate to="/login" />;
 }
 
