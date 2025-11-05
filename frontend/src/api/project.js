@@ -64,3 +64,33 @@ export const getMyProjects = async (token) => {
     throw error;
   }
 };
+
+export const updateProject = async (category, id, formData, token) => {
+  try {
+    const response = await axios.put(
+      `${API_BASE_URL}/projects/my/${category}/${id}/update/`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error updating project:", error);
+    throw error;
+  }
+};
+export const deleteProject = async (category, id, token) => {
+  try {
+    await axios.delete(`${API_BASE_URL}/projects/my/${category}/${id}/delete/`, {
+      
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  } catch (error) {
+    console.error("Error deleting project:", error);
+    throw error;
+  }
+};

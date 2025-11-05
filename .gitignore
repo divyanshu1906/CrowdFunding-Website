@@ -20,3 +20,5 @@ env/
 # Environment variables and OS files
 *.env
 .DS_Store
+
+db.sqlite3
