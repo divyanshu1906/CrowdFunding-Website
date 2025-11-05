@@ -38,10 +38,17 @@ export default function Music() {
     setError("");
 
     const rewards = form.reward_tiers
-      ? form.reward_tiers.split("\n").map((line) => {
-          const [amount, reward] = line.split("=");
-          return { amount: Number(amount?.trim().replace("₹", "")), reward: reward?.trim() };
-        })
+      ? form.reward_tiers
+          .split("\n")
+          .map((line) => {
+            if (!line.includes("=")) return null;
+            const [place, reward] = line.split("=");
+            return {
+              place: place?.trim(),
+              reward: reward?.trim() || "No reward specified",
+            };
+          })
+          .filter(Boolean)
       : [];
 
     const formData = new FormData();
@@ -52,7 +59,9 @@ export default function Music() {
     formData.append("reward_tiers", JSON.stringify(rewards));
 
     if (form.album_cover) formData.append("album_cover", form.album_cover);
-    form.audio_samples.forEach((file) => formData.append("audio_samples", file));
+    form.audio_samples.forEach((file) =>
+      formData.append("audio_samples", file)
+    );
 
     try {
       await createMusicProject(formData, access);
@@ -60,7 +69,10 @@ export default function Music() {
       navigate("/project");
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.detail || "Something went wrong while creating the project.");
+      setError(
+        err.response?.data?.detail ||
+          "Something went wrong while creating the project."
+      );
     } finally {
       setLoading(false);
     }
@@ -68,6 +80,7 @@ export default function Music() {
 
   return (
     <ProjectFormComponent
+      category="Music"
       form={form}
       handleChange={handleChange}
       handleSubmit={handleSubmit}

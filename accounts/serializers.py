@@ -42,7 +42,10 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 class FilmProjectSerializer(serializers.ModelSerializer):
     creator_name = serializers.CharField(source='creator.username', read_only=True)
+    poster_image = serializers.ImageField(use_url=True)
+    reward_tiers = serializers.JSONField(required=False, help_text="List of {place, reward} objects")
 
+    
     class Meta:
         model = FilmProject
         fields = [
@@ -70,6 +73,8 @@ class AudioSampleSerializer(serializers.ModelSerializer):
 class MusicProjectSerializer(serializers.ModelSerializer):
     creator_name = serializers.CharField(source='creator.username', read_only=True)
     audio_samples = AudioSampleSerializer(many=True, read_only=True)
+    album_cover = serializers.ImageField(use_url=True)
+    reward_tiers = serializers.JSONField(required=False, help_text="List of {place, reward} objects")
 
     class Meta:
         model = MusicProject
@@ -99,6 +104,7 @@ class ArtworkImageSerializer(serializers.ModelSerializer):
 class ArtProjectSerializer(serializers.ModelSerializer):
     creator_name = serializers.CharField(source='creator.username', read_only=True)
     artwork_images = ArtworkImageSerializer(many=True, read_only=True)
+    reward_tiers = serializers.JSONField(required=False, help_text="List of {place, reward} objects")
 
     class Meta:
         model = ArtProject
