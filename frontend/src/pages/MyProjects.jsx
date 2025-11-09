@@ -27,19 +27,22 @@ export default function MyProjects() {
   }, [access]);
 
   const handleDelete = async (category, id) => {
-  if (!window.confirm("Are you sure you want to delete this project?")) return;
-  try {
-    await deleteProject(category.toLowerCase(), id, access); 
+    if (!window.confirm("Are you sure you want to delete this project?"))
+      return;
+    try {
+      await deleteProject(category.toLowerCase(), id, access);
 
-   setProjects((prevProjects) =>
-      prevProjects.filter((p) => p.id !== id || p.category !== category)
-    );
-    alert("Project deleted successfully!");
-  } catch (err) {
-    console.error("Error deleting project:", err);
-    alert("Failed to delete project.");
-  }
-};
+      // ✅ remove the project immediately from the UI
+      setProjects((prevProjects) =>
+        prevProjects.filter((p) => !(p.id === id && p.category === category))
+      );
+
+      alert("Project deleted successfully!");
+    } catch (err) {
+      console.error("Error deleting project:", err);
+      alert("Failed to delete project.");
+    }
+  };
 
   if (loading) return <p className="text-center mt-10">Loading...</p>;
 
@@ -63,9 +66,9 @@ export default function MyProjects() {
               Raised: ₹{project.raised_amount}
             </p>
 
-            {project.poster_image && (
+            {(project.poster_image || project.album_cover) && (
               <img
-                src={project.poster_image}
+                src={project.poster_image || project.album_cover}
                 alt={project.title}
                 className="w-full h-40 object-cover rounded-xl mb-2"
               />

@@ -8,6 +8,17 @@ from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
 from .models import FilmProject, MusicProject, ArtProject, ArtworkImage, AudioSample
+from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
+import hmac
+import hashlib
+import json
+from decimal import Decimal
+
+try:
+    import razorpay
+except Exception:
+    razorpay = None
 
 
 @api_view(['POST'])
@@ -209,6 +220,152 @@ def get_all_art(request):
     projects = ArtProject.objects.all().order_by('-created_at')
     serializer = ArtProjectSerializer(projects, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def create_order(request):
+    """Create a Razorpay order. Expects JSON: { amount: <decimal in INR>, category: 'film'|'music'|'art', project_id: <int> }
+
+    Returns order details and publishable key id for checkout.
+    """
+    data = request.data
+    try:
+        amount = Decimal(str(data.get('amount', '0')))
+        if amount <= 0:
+            return Response({'error': 'Amount must be > 0'}, status=status.HTTP_400_BAD_REQUEST)
+        # convert to paise
+        amount_paise = int(amount * 100)
+    except Exception:
+        return Response({'error': 'Invalid amount'}, status=status.HTTP_400_BAD_REQUEST)
+
+    category = data.get('category')
+    project_id = data.get('project_id')
+
+    if razorpay is None:
+        return Response({'error': 'Razorpay library not installed on server'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+    order_payload = {
+        'amount': amount_paise,
+        'currency': 'INR',
+        'receipt': f"project_{category}_{project_id}",
+        'payment_capture': 1,
+    }
+    try:
+        order = client.order.create(data=order_payload)
+        # create local Payment record
+        from .models import Payment
+        payment = Payment.objects.create(
+            user=request.user if request.user and request.user.is_authenticated else None,
+            project_category=category or '',
+            project_id=project_id or None,
+            amount=amount,
+            razorpay_order_id=order.get('id')
+        )
+
+        return Response({
+            'order': order,
+            'key': settings.RAZORPAY_KEY_ID,
+            'payment_id': payment.id,
+        })
+    except Exception as e:
+        print('Error creating razorpay order:', e)
+        return Response({'error': 'Failed to create order'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+def verify_payment(request):
+    """Verify the payment signature sent from frontend after successful checkout.
+
+    Expects: { razorpay_order_id, razorpay_payment_id, razorpay_signature, payment_id }
+    """
+    payload = request.data
+    razorpay_order_id = payload.get('razorpay_order_id')
+    razorpay_payment_id = payload.get('razorpay_payment_id')
+    razorpay_signature = payload.get('razorpay_signature')
+    payment_local_id = payload.get('payment_id')
+
+    if not (razorpay_order_id and razorpay_payment_id and razorpay_signature):
+        return Response({'error': 'Missing parameters'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if razorpay is None:
+        return Response({'error': 'Razorpay library not installed on server'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+    try:
+        client.utility.verify_payment_signature({
+            'razorpay_order_id': razorpay_order_id,
+            'razorpay_payment_id': razorpay_payment_id,
+            'razorpay_signature': razorpay_signature,
+        })
+    except Exception as e:
+        print('Signature verification failed:', e)
+        # mark local payment as failed if exists
+        from .models import Payment
+        if payment_local_id:
+            Payment.objects.filter(id=payment_local_id).update(status='failed')
+        return Response({'error': 'Signature verification failed'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # signature is valid — update payment
+    from .models import Payment
+    payment = None
+    if payment_local_id:
+        try:
+            payment = Payment.objects.get(id=payment_local_id)
+            payment.razorpay_payment_id = razorpay_payment_id
+            payment.razorpay_signature = razorpay_signature
+            payment.status = 'paid'
+            payment.save()
+        except Payment.DoesNotExist:
+            payment = None
+
+    return Response({'message': 'Payment verified', 'payment': payment_local_id})
+
+
+@csrf_exempt
+def razorpay_webhook(request):
+    """Endpoint to receive Razorpay webhooks. Configure the webhook URL and secret in Razorpay dashboard.
+
+    Verifies the signature sent in header 'X-Razorpay-Signature'.
+    """
+    # raw body required for signature verification
+    body = request.body
+    signature = request.META.get('HTTP_X_RAZORPAY_SIGNATURE', '')
+    secret = getattr(settings, 'RAZORPAY_WEBHOOK_SECRET', None)
+
+    if not secret:
+        return Response({'error': 'Webhook secret not configured'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    expected = hmac.new(secret.encode(), body, hashlib.sha256).hexdigest()
+
+    if not hmac.compare_digest(expected, signature):
+        print('Webhook signature mismatch')
+        return Response({'error': 'Invalid signature'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        payload = json.loads(body.decode('utf-8'))
+    except Exception:
+        payload = {}
+
+    # Basic handling: log and optionally update Payment model based on event
+    print('Razorpay webhook received:', payload.get('event'))
+    # Example: payment.captured
+    event = payload.get('event')
+    if event == 'payment.captured':
+        data = payload.get('payload', {}).get('payment', {}).get('entity', {})
+        razorpay_payment_id = data.get('id')
+        razorpay_order_id = data.get('order_id')
+        amount = Decimal(data.get('amount') or 0) / 100
+        # update matching payment
+        from .models import Payment
+        Payment.objects.filter(razorpay_order_id=razorpay_order_id).update(
+            razorpay_payment_id=razorpay_payment_id,
+            amount=amount,
+            status='paid'
+        )
+
+    return Response({'status': 'ok'})
 
 @api_view(['GET'])
 def get_film_by_id(request, id):

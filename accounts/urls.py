@@ -24,4 +24,8 @@ urlpatterns = [
     path("films/", views.get_all_films, name="get_all_films"),
     path("music/", views.get_all_music, name="get_all_music"),
     path("art/", views.get_all_art, name="get_all_art"),
+    # Payment endpoints (Razorpay integration)
+    path('payments/create-order/', views.create_order, name='create_order'),
+    path('payments/verify/', views.verify_payment, name='verify_payment'),
+    path('payments/webhook/', views.razorpay_webhook, name='razorpay_webhook'),
 ]

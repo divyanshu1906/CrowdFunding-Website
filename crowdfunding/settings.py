@@ -13,6 +13,11 @@ SECRET_KEY = 'django-insecure-7j8j7j252=7j=s_s90ue9p!4nk^zxve5=11@oys$&xc%=zl!)@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# Razorpay credentials (set these in your environment for production)
+import os
+RAZORPAY_KEY_ID = os.environ.get("RAZORPAY_KEY_ID", "rzp_test_RdWlPy047cGI63")
+RAZORPAY_KEY_SECRET = os.environ.get("RAZORPAY_KEY_SECRET", "0e2HIls0PgfdNMR2v558x4GS")
+RAZORPAY_WEBHOOK_SECRET = os.environ.get("RAZORPAY_WEBHOOK_SECRET", "your_razorpay_webhook_secret_here")
 ALLOWED_HOSTS = []
 
 

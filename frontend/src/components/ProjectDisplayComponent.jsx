@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getProjectById } from "../api/project";
 import ProjectModal from "./ProjectModal"; // ✅ new file
 
@@ -7,6 +8,7 @@ const ProjectDisplayComponent = ({ project }) => {
   const [selectedProject, setSelectedProject] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleViewDetails = async () => {
     try {
@@ -64,7 +66,7 @@ const ProjectDisplayComponent = ({ project }) => {
             {loading ? "Loading..." : "View Details"}
           </button>
           <button
-            onClick={() => alert("Donation popup coming soon 💸")}
+            onClick={() => navigate(`/donate/${project.category}/${project.id}`)}
             className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition"
           >
             Make Donation
