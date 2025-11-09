@@ -35,6 +35,8 @@ export default function App() {
         <Routes>
           {/* 🔓 Public Routes (no navbar/footer) */}
           <Route path="/" element={<Dashboard />} />
+          {/* Alias so /dashboard works after logout redirects */}
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 

@@ -14,7 +14,7 @@ const ProjectFormComponent = ({ category, form, handleChange, handleSubmit, load
       className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-lg mx-auto"
     >
       <h2 className="text-2xl font-semibold mb-6 text-center text-indigo-700">
-        Create {category} New Project
+        Create New {category} Project
       </h2>
 
       {/* 🧩 BaseProject common fields */}

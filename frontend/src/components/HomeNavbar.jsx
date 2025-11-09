@@ -9,6 +9,10 @@ export default function HomeNavbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
+  const isAuthenticated = Boolean(
+    user && (user.id || user.username || (user.user && user.user.id) || user.profile)
+  );
+
   // ✅ Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -30,52 +34,71 @@ export default function HomeNavbar() {
         CrowdFunding
       </h1>
 
-      {/* 🔹 Right: Profile Button + Dropdown */}
+      {/* 🔹 Right: show profile dropdown when authenticated, otherwise Login/Register */}
       <div className="relative" ref={menuRef}>
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="btn-profile"
-        >
-          {/* Optional avatar circle */}
-          <div className="avatar-circle w-8 h-8 rounded-full flex items-center justify-center font-bold">
-            {user?.username?.charAt(0).toUpperCase() || "U"}
-          </div>
-
-          <span>{user?.username || "Profile"}</span>
-
-          <svg
-            className={`w-4 h-4 transition-transform ${
-              menuOpen ? "rotate-180" : ""
-            }`}
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
-
-        {/* 🔽 Dropdown Menu */}
-        {menuOpen && (
-          <div className="absolute right-0 mt-2 w-44 bg-white rounded-lg shadow-lg border border-gray-100 z-50">
+        {isAuthenticated ? (
+          <>
             <button
-              onClick={() => {
-                navigate("/profile");
-                setMenuOpen(false);
-              }}
-              className="dropdown-btn-profile"
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="btn-profile"
             >
-              👤 View Profile
+              {/* Optional avatar circle */}
+              <div className="avatar-circle w-8 h-8 rounded-full flex items-center justify-center font-bold">
+                {user?.username?.charAt(0).toUpperCase() || "U"}
+              </div>
+
+              <span>{user?.username || "Profile"}</span>
+
+              <svg
+                className={`w-4 h-4 transition-transform ${
+                  menuOpen ? "rotate-180" : ""
+                }`}
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            {/* 🔽 Dropdown Menu */}
+            {menuOpen && (
+              <div className="absolute right-0 mt-2 w-44 bg-white rounded-lg shadow-lg border border-gray-100 z-50">
+                <button
+                  onClick={() => {
+                    navigate("/profile");
+                    setMenuOpen(false);
+                  }}
+                  className="dropdown-btn-profile"
+                >
+                  👤 View Profile
+                </button>
+                <button
+                  onClick={() => {
+                    logout();
+                    navigate("/dashboard");
+                  }}
+                  className="dropdown-btn-logout"
+                >
+                  🚪 Logout
+                </button>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => navigate('/login')}
+              className="px-4 py-2 rounded-lg border border-indigo-500 text-indigo-600 bg-white hover:bg-indigo-50 transition"
+            >
+              Login
             </button>
             <button
-              onClick={() => {
-                logout();
-                navigate("/");
-              }}
-              className="dropdown-btn-logout"
+              onClick={() => navigate('/register')}
+              className="px-4 py-2 rounded-lg border border-indigo-500 text-indigo-600 bg-white hover:bg-indigo-50 transition"
             >
-              🚪 Logout
+              Register
             </button>
           </div>
         )}

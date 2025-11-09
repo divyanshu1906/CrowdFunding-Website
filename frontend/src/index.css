@@ -74,6 +74,16 @@ body, #root {
   background-color: #F7C94D; /* slightly lighter */
 }
 
+/* Danger button (used for destructive actions) */
+.btn-danger {
+  background-color: var(--error);
+  color: white;
+  border: none;
+}
+.btn-danger:hover {
+  background-color: #DC2626; /* slightly darker red on hover */
+}
+
 /* Category badge */
 .badge-category {
   background-color: var(--accent-lavender);

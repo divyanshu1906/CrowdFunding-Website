@@ -77,7 +77,7 @@ export default function MyProjects() {
             <div className="flex justify-between mt-4">
               <button
                 onClick={() => setSelectedProject(project)}
-                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+                className="btn-primary px-4 py-2 rounded-lg focus-ring-primary transition"
               >
                 View
               </button>
@@ -85,13 +85,13 @@ export default function MyProjects() {
                 onClick={() =>
                   navigate(`/update-project/${project.category}/${project.id}`)
                 }
-                className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition"
+                className="btn-secondary px-4 py-2 rounded-lg transition"
               >
                 Update
               </button>
               <button
                 onClick={() => handleDelete(project.category, project.id)}
-                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
+                className="btn-danger px-4 py-2 rounded-lg transition"
               >
                 Delete
               </button>
