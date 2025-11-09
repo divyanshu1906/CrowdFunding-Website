@@ -50,7 +50,7 @@ export default function Payment() {
               payment_id
             );
             setMessage("✅ Payment successful! Thank you for your donation.");
-            setTimeout(() => navigate(`/project/${id}`), 1800);
+            setTimeout(() => navigate(`/project/${category}/${id}`), 1800);
           } catch (err) {
             console.error("Verification failed", err);
             setMessage("⚠️ Payment succeeded but verification failed.");
@@ -60,7 +60,7 @@ export default function Payment() {
           name: "",
           email: "",
         },
-        theme: { color: "#4f46e5" },
+  theme: { color: "#7A89C2" },
       };
 
       const rzp = new window.Razorpay(options);
@@ -77,7 +77,7 @@ export default function Payment() {
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4">
       <div className="w-full max-w-lg bg-white shadow-lg rounded-2xl p-8 border border-gray-100">
         {/* Header */}
-        <h1 className="text-3xl font-bold text-center text-indigo-600 mb-2">
+        <h1 className="text-3xl font-bold text-center text-primary mb-2">
           Support This Project
         </h1>
         <p className="text-center text-gray-600 mb-6">
@@ -99,7 +99,7 @@ export default function Payment() {
             step="1"
             value={amount}
             onChange={(e) => setAmount(Number(e.target.value))}
-            className="block w-full rounded-lg border border-gray-300 p-3 mb-6 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+            className="block w-full rounded-lg border border-gray-300 p-3 mb-6 focus-ring-primary focus:outline-none"
           />
 
           <button
@@ -107,8 +107,8 @@ export default function Payment() {
             disabled={loading}
             className={`w-full py-3 text-white rounded-lg font-medium transition-colors duration-200 ${
               loading
-                ? "bg-indigo-400 cursor-not-allowed"
-                : "bg-indigo-600 hover:bg-indigo-700"
+                ? "opacity-60 cursor-not-allowed btn-primary"
+                : "btn-primary hover:brightness-95"
             }`}
           >
             {loading ? "Processing..." : `Donate ₹${amount}`}
@@ -132,7 +132,7 @@ export default function Payment() {
         <div className="mt-6 text-center">
           <button
             onClick={() => navigate(-1)}
-            className="text-sm text-indigo-500 hover:text-indigo-700 underline"
+            className="text-sm text-primary underline hover:opacity-90"
           >
             ← Back to Project
           </button>
@@ -140,4 +140,5 @@ export default function Payment() {
       </div>
     </div>
   );
+
 }

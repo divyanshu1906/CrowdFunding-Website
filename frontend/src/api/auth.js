@@ -30,6 +30,8 @@ export async function me(accessToken) {
   const res = await fetch(`${API_BASE}/auth/me/`, {
     headers: { Authorization: `Bearer ${accessToken}` },
   });
+  // Return null for non-authenticated responses so callers can handle it
+  if (!res.ok) return null;
   return res.json();
 }
 

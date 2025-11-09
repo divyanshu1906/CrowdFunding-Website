@@ -13,6 +13,7 @@ import AppLayout from "./layout/AppLayout";
 // Public Pages
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard"; // ✅ your new landing page
 
 // Protected Pages
 import Home from "./pages/Home";
@@ -32,7 +33,12 @@ export default function App() {
     <AuthProvider>
       <Router>
         <Routes>
-          {/* 🔒 Protected Routes (with Navbar) */}
+          {/* 🔓 Public Routes (no navbar/footer) */}
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+
+          {/* 🔒 Protected Routes (with Navbar + Footer) */}
           <Route
             element={
               <PrivateRoute>
@@ -40,24 +46,21 @@ export default function App() {
               </PrivateRoute>
             }
           >
-            <Route path="/" element={<Home />} />
+            {/* Inside AppLayout → Navbar + Footer are automatically included */}
+            <Route path="/home" element={<Home />} />
             <Route path="/project" element={<AllProjects />} />
-            <Route path="/project/:id" element={<ProjectInformation />} />
+            <Route path="/project/:category/:id" element={<ProjectInformation />} />
             <Route path="/donate/:category/:id" element={<Payment />} />
             <Route path="/my-projects" element={<MyProjects />} />
             <Route path="/update-project/:category/:id" element={<UpdateProject />} />
             <Route path="/profile" element={<Profile />} />
 
-            {/* Start Project */}
+            {/* Start Project Routes */}
             <Route path="/start-project" element={<StartProject />} />
             <Route path="/start-project/film" element={<Film />} />
             <Route path="/start-project/music" element={<Music />} />
             <Route path="/start-project/art" element={<Art />} />
           </Route>
-
-          {/* 🔓 Public Routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
 
           {/* 🚫 404 fallback */}
           <Route

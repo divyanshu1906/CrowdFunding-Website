@@ -21,6 +21,8 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # Expose accounts API under two prefixes so the frontend can call
+    # /api/auth/... and /api/projects/... as expected by the frontend code.
     path('api/auth/', include('accounts.urls')),
     path('api/projects/', include('accounts.urls')),
 ]

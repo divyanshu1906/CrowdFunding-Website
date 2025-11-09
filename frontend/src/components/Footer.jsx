@@ -58,7 +58,7 @@ export default function Footer() {
           </h3>
           <p className="text-sm text-gray-400">
             📧 support@crowdfunding.com <br />
-            📍 New Delhi, India
+            📍 Jalandhar, India
           </p>
           <div className="flex justify-center md:justify-start gap-4 mt-4 text-lg">
             <a href="#" className="hover:text-white">🌐</a>

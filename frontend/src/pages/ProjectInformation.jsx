@@ -3,21 +3,21 @@ import { useParams, useNavigate } from "react-router-dom";
 import { getProjectById } from "../api/project";
 
 const ProjectInformation = () => {
-  const { id } = useParams();
+  const { category, id } = useParams();
   const [project, setProject] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchProject() {
       try {
-        const data = await getProjectById(id);
+        const data = await getProjectById(category, id);
         setProject(data);
       } catch (error) {
         console.error("Error fetching project:", error);
       }
     }
     fetchProject();
-  }, [id]);
+  }, [category, id]);
 
   if (!project) return <p className="p-10">Loading project details...</p>;
 

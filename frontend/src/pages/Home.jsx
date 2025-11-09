@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* ✅ Hero Section */}
-      <section className="bg-blue-600 text-white py-20 text-center">
+        <section className="bg-primary-gradient text-white py-20 text-center">
         <h1 className="text-4xl font-bold mb-4">Support Creative Projects</h1>
         <p className="text-lg mb-6">
           Discover and fund amazing ideas in film, music, and art.
@@ -21,14 +21,14 @@ export default function Home() {
           <div className="flex justify-center gap-4">
             <button
               onClick={() => navigate("/start-project")}
-              className="bg-white text-blue-600 px-6 py-3 rounded-full font-semibold hover:bg-gray-100 transition"
+                className="bg-white text-primary px-6 py-3 rounded-full font-semibold hover:opacity-90 transition"
             >
               Start a Project
             </button>
 
             <button
               onClick={() => navigate("/my-projects")}
-              className="bg-yellow-400 text-blue-900 px-6 py-3 rounded-full font-semibold hover:bg-yellow-300 transition"
+                className="bg-yellow-400 text-blue-900 px-6 py-3 rounded-full font-semibold hover:bg-yellow-300 transition"
             >
               My Created Projects
             </button>

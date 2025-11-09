@@ -6,11 +6,11 @@ const ProjectModal = ({ project, onClose }) => {
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex justify-center items-center z-50"
+      className="fixed inset-0 modal-overlay flex justify-center items-start sm:items-center p-4 overflow-auto z-50"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-2xl relative animate-fadeIn"
+        className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-2xl relative animate-fadeIn max-h-[85vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()} // prevent close when clicking inside
       >
         {/* Close button */}

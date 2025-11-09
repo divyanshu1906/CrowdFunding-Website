@@ -27,7 +27,7 @@ const ProjectDisplayComponent = ({ project }) => {
 
   return (
     <>
-      <div className="bg-white shadow-md rounded-2xl p-5 hover:shadow-xl transition duration-300 relative">
+  <div className="card-surface p-5 hover:shadow-xl transition duration-300 relative">
         <h2 className="text-xl font-semibold mb-2">{project.title}</h2>
         <p className="text-gray-700 mb-3">{project.description}</p>
         <p className="text-sm text-gray-500 mb-1">Creator: {project.creator_name}</p>
@@ -61,7 +61,7 @@ const ProjectDisplayComponent = ({ project }) => {
         <div className="flex justify-between mt-4">
           <button
             onClick={handleViewDetails}
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+            className="btn-primary px-4 py-2 rounded-lg hover:opacity-95 transition"
           >
             {loading ? "Loading..." : "View Details"}
           </button>

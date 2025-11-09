@@ -13,3 +13,249 @@
 .animate-fadeIn {
   animation: fadeIn 0.2s ease-out;
 }
+
+
+/* Design tokens (requested color system) */
+:root {
+  /* Primary */
+  --primary: #4F46E5; /* Indigo */
+  --primary-hover: #4338CA; /* Deep Indigo */
+
+  /* Secondary / Accent */
+  --accent-gold: #FACC15; /* Golden Yellow */
+
+  /* Accent 2 */
+  --accent-lavender: #A78BFA; /* Soft Lavender */
+
+  /* Success / Error */
+  --success: #10B981; /* Emerald */
+  --error: #EF4444; /* Rose */
+
+  /* Backgrounds */
+  --bg-light: #D6D2D2; /* Page background (user requested) */
+  --bg-dark: #1F2937; /* Deep Gray */
+
+  /* Surface / Cards */
+  --surface: #FFFFFF; /* Pure White */
+
+  /* Text */
+  --text-primary: #111827; /* Charcoal Gray */
+  --text-secondary: #6B7280; /* Muted Gray */
+}
+
+/* Page background - use the requested Off White */
+body, #root {
+  background-color: var(--bg-light);
+}
+
+/* Utility class to force site background */
+.bg-site-bg { background-color: var(--bg-light) !important; }
+
+/* Primary gradient for hero/header accents */
+.bg-primary-gradient {
+  background: linear-gradient(90deg, var(--primary), var(--accent-lavender));
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: var(--primary);
+  color: #ffffff;
+  border: none;
+}
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+}
+
+.btn-secondary {
+  background-color: var(--accent-gold);
+  color: var(--text-primary);
+}
+.btn-secondary:hover {
+  background-color: #F7C94D; /* slightly lighter */
+}
+
+/* Category badge */
+.badge-category {
+  background-color: var(--accent-lavender);
+  color: #fff;
+  padding: 0.25rem 0.6rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+/* Feedback text */
+.text-success { color: var(--success); }
+.text-error { color: var(--error); }
+
+/* Card / Surface */
+.card-surface {
+  background-color: var(--surface);
+  box-shadow: 0 6px 18px rgba(17,24,39,0.06);
+  border-radius: 1rem;
+}
+
+/* Text helpers */
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+
+/* Dark section (footer, etc.) */
+.bg-dark-section { background-color: var(--bg-dark); color: #e5e7eb; }
+
+/* focus ring helper tuned to primary */
+.focus-ring-primary:focus {
+  outline: 3px solid rgba(79,70,229,0.12);
+  outline-offset: 2px;
+}
+
+/* Map common Tailwind color utilities to our design tokens so components don't need markup changes */
+/* Primary Indigo */
+.text-indigo-600 { color: var(--primary) !important; }
+.bg-indigo-600 { background-color: var(--primary) !important; }
+.hover\:bg-indigo-700:hover { background-color: var(--primary-hover) !important; }
+.text-indigo-100 { color: rgba(79,70,229,0.18) !important; }
+
+/* Secondary / Accent: Golden Yellow */
+.bg-yellow-400 { background-color: var(--accent-gold) !important; }
+.hover\:bg-yellow-300:hover { background-color: #F7D94A !important; }
+
+/* Accent Lavender */
+.bg-purple-400 { background-color: var(--accent-lavender) !important; }
+.text-purple-500 { color: var(--accent-lavender) !important; }
+
+/* Feedback colors */
+.text-emerald-600 { color: var(--success) !important; }
+.text-rose-600 { color: var(--error) !important; }
+
+/* Background and dark sections */
+.bg-gray-50 { background-color: var(--bg-light) !important; }
+.bg-gray-800, .bg-gray-900 { background-color: var(--bg-dark) !important; }
+
+/* Text colors mapping */
+.text-gray-900 { color: var(--text-primary) !important; }
+.text-gray-800 { color: var(--text-primary) !important; }
+.text-gray-600, .text-gray-500 { color: var(--text-secondary) !important; }
+
+/* Card surface defaults (bg-white already maps to surface) */
+.shadow-md { box-shadow: 0 6px 18px rgba(17,24,39,0.06) !important; }
+.rounded-xl { border-radius: 1rem !important; }
+
+/* Small helpers used in project */
+.hover\:underline:hover { text-decoration: underline !important; }
+.hover\:-translate-y-1:hover { transform: translateY(-0.25rem) !important; }
+.hover\:shadow-xl:hover { box-shadow: 0 20px 40px rgba(17,24,39,0.12) !important; }
+
+/* Global page background: make every page background the requested color */
+/* This sets the app root and body background, and provides a utility class.
+   It also overrides the common Tailwind utility `bg-gray-50` where it's used as a
+   page wrapper so the visible page background matches the requested color. */
+body, #root {
+  background-color: #D6D2D2;
+}
+
+/* utility for explicit usage */
+.bg-site-bg {
+  background-color: #D6D2D2 !important;
+}
+
+/* override common page wrapper used in the codebase */
+.bg-gray-50 {
+  background-color: #D6D2D2 !important;
+}
+
+/* Buttons */
+.btn-primary {
+  background: linear-gradient(90deg, var(--c2), var(--c3));
+  color: var(--primary-contrast);
+  border: none;
+}
+.btn-outline-primary {
+  background: white;
+  color: var(--c3);
+  border: 1px solid var(--c3);
+}
+
+.btn-primary-ghost {
+  background: white;
+  color: var(--c3);
+  border-radius: 9999px;
+}
+
+/* focus ring helper */
+.focus-ring-primary:focus {
+  outline: 3px solid rgba(122,137,194,0.15);
+  outline-offset: 2px;
+}
+
+/* Navbar specific styles used by HomeNavbar.jsx */
+.home-navbar {
+  background: linear-gradient(90deg, rgba(227,215,255,0.6), rgba(175,162,255,0.6));
+  backdrop-filter: blur(4px);
+}
+
+.home-navbar .btn-primary {
+  box-shadow: 0 2px 8px rgba(122,137,194,0.08);
+}
+
+.avatar-circle {
+  background-color: var(--c1);
+  color: var(--c3);
+  border: 1px solid rgba(122,137,194,0.12);
+}
+
+/* make sure dropdowns and navbar elements remain readable on the gradient */
+.home-navbar :is(button, a, h1, span) {
+  color: var(--c3);
+}
+
+/* Dropdown action button styles */
+.dropdown-btn-profile {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.5rem 1rem;
+  color: var(--primary);
+  background: transparent;
+  border: none;
+  font-weight: 600;
+}
+.dropdown-btn-profile:hover {
+  background: rgba(79,70,229,0.06); /* subtle indigo tint */
+}
+
+.dropdown-btn-logout {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.5rem 1rem;
+  color: var(--error);
+  background: transparent;
+  border: none;
+  font-weight: 600;
+}
+.dropdown-btn-logout:hover {
+  background: rgba(239,68,68,0.06); /* subtle red tint */
+}
+
+/* Profile button: white background, primary-colored text, subtle border */
+.btn-profile {
+  background-color: #ffffff !important;
+  color: var(--primary) !important;
+  border: 1px solid rgba(17,24,39,0.06);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 9999px;
+  font-weight: 600;
+}
+.btn-profile:hover {
+  background-color: rgba(255,255,255,0.95) !important;
+  box-shadow: 0 6px 16px rgba(17,24,39,0.06);
+}
+
+/* Modal overlay: use translucent page-tone with backdrop blur instead of black */
+.modal-overlay {
+  background-color: rgba(214,210,210,0.45); /* matches #D6D2D2 */
+  backdrop-filter: blur(6px);
+}

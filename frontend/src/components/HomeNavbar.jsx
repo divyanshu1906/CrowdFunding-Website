@@ -21,10 +21,10 @@ export default function HomeNavbar() {
   }, []);
 
   return (
-    <header className="flex justify-between items-center px-8 py-4 bg-white shadow-md">
+  <header className="home-navbar flex justify-between items-center px-8 py-4 bg-white shadow-md">
       {/* 🔹 Left: Logo / Title */}
       <h1
-        className="text-2xl font-bold text-blue-600 cursor-pointer"
+        className="text-2xl font-bold text-primary cursor-pointer"
         onClick={() => navigate("/")}
       >
         CrowdFunding
@@ -34,10 +34,10 @@ export default function HomeNavbar() {
       <div className="relative" ref={menuRef}>
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-full font-semibold hover:bg-blue-700 transition"
+          className="btn-profile"
         >
           {/* Optional avatar circle */}
-          <div className="w-8 h-8 bg-white text-blue-600 rounded-full flex items-center justify-center font-bold">
+          <div className="avatar-circle w-8 h-8 rounded-full flex items-center justify-center font-bold">
             {user?.username?.charAt(0).toUpperCase() || "U"}
           </div>
 
@@ -64,16 +64,16 @@ export default function HomeNavbar() {
                 navigate("/profile");
                 setMenuOpen(false);
               }}
-              className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+              className="dropdown-btn-profile"
             >
               👤 View Profile
             </button>
             <button
               onClick={() => {
                 logout();
-                navigate("/login");
+                navigate("/");
               }}
-              className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+              className="dropdown-btn-logout"
             >
               🚪 Logout
             </button>

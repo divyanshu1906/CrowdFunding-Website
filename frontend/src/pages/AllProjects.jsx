@@ -31,7 +31,7 @@ export default function AllProjects() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-site-bg p-6">
       <h2 className="text-3xl font-bold text-center mb-8">All Projects</h2>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {projects.length > 0 ? (

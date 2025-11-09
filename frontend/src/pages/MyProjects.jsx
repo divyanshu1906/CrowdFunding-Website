@@ -47,16 +47,16 @@ export default function MyProjects() {
   if (loading) return <p className="text-center mt-10">Loading...</p>;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-site-bg p-6">
       <h2 className="text-3xl font-bold text-center mb-8">
         My Created Projects
       </h2>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {projects.map((project) => (
-          <div
-            key={project.id}
-            className="bg-white shadow-md rounded-2xl p-5 hover:shadow-xl transition duration-300 relative"
-          >
+            <div
+                key={project.id}
+                className="card-surface p-5 hover:shadow-xl transition duration-300 relative"
+              >
             <h2 className="text-xl font-semibold mb-2">{project.title}</h2>
             <p className="text-gray-700 mb-3">{project.description}</p>
             <p className="text-sm text-gray-500 mb-1">
